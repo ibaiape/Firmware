@@ -42,7 +42,7 @@ set(config_module_list
 	# Estimation modules (EKF/ SO3 / other filters)
 	#
 	#modules/attitude_estimator_ekf
-	modules/ekf_att_pos_estimator
+	#modules/ekf_att_pos_estimator
 	modules/attitude_estimator_q
 	modules/position_estimator_inav
 	modules/local_position_estimator
