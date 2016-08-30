@@ -28,38 +28,76 @@ set(CMAKE_SYSTEM_NAME Generic)
 #this one not so much
 set(CMAKE_SYSTEM_VERSION 1)
 
-# specify the cross compiler
-find_program(C_COMPILER arm-linux-gnueabihf-gcc
-	PATHS ${RPI_TOOLCHAIN_DIR}/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
-	NO_DEFAULT_PATH
-	)
+#if defined(__PX4_DARWIN)
 
-if(NOT C_COMPILER)
-	message(FATAL_ERROR "could not find arm-linux-gnueabihf-gcc compiler")
-endif()
-cmake_force_c_compiler(${C_COMPILER} GNU)
+	# In OS X, RPI_TOOLCHAIN_DIR is generally set as:
+	#   export RPI_TOOLCHAIN_DIR="/usr/local/linaro/arm-linux-gnueabihf-raspbian/"
+	# specify the cross compiler
+	find_program(C_COMPILER arm-linux-gnueabihf-gcc
+		PATHS ${RPI_TOOLCHAIN_DIR}/bin
+		NO_DEFAULT_PATH
+		)
 
-find_program(CXX_COMPILER arm-linux-gnueabihf-g++
-	PATHS ${RPI_TOOLCHAIN_DIR}/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
-	NO_DEFAULT_PATH
-	)
+	if(NOT C_COMPILER)
+		message(FATAL_ERROR "could not find arm-linux-gnueabihf-gcc compiler")
+	endif()
+	cmake_force_c_compiler(${C_COMPILER} GNU)
 
-if(NOT CXX_COMPILER)
-	message(FATAL_ERROR "could not find arm-linux-gnueabihf-g++ compiler")
-endif()
-cmake_force_cxx_compiler(${CXX_COMPILER} GNU)
+	find_program(CXX_COMPILER arm-linux-gnueabihf-g++
+		PATHS ${RPI_TOOLCHAIN_DIR}/bin
+		NO_DEFAULT_PATH
+		)
 
-# compiler tools
-foreach(tool objcopy nm ld)
-	string(TOUPPER ${tool} TOOL)
-	find_program(${TOOL} arm-linux-gnueabihf-${tool}
+	if(NOT CXX_COMPILER)
+		message(FATAL_ERROR "could not find arm-linux-gnueabihf-g++ compiler")
+	endif()
+	cmake_force_cxx_compiler(${CXX_COMPILER} GNU)
+
+	# compiler tools
+	foreach(tool objcopy nm ld)
+		string(TOUPPER ${tool} TOOL)
+		find_program(${TOOL} arm-linux-gnueabihf-${tool}
+			PATHS ${RPI_TOOLCHAIN_DIR}/bin
+			NO_DEFAULT_PATH
+			)
+		if(NOT ${TOOL})
+			message(FATAL_ERROR "could not find arm-linux-gnueabihf-${tool}")
+		endif()
+	endforeach()    
+#else
+	# specify the cross compiler
+	find_program(C_COMPILER arm-linux-gnueabihf-gcc
 		PATHS ${RPI_TOOLCHAIN_DIR}/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
 		NO_DEFAULT_PATH
 		)
-	if(NOT ${TOOL})
-		message(FATAL_ERROR "could not find arm-linux-gnueabihf-${tool}")
+
+	if(NOT C_COMPILER)
+		message(FATAL_ERROR "could not find arm-linux-gnueabihf-gcc compiler")
 	endif()
-endforeach()
+	cmake_force_c_compiler(${C_COMPILER} GNU)
+
+	find_program(CXX_COMPILER arm-linux-gnueabihf-g++
+		PATHS ${RPI_TOOLCHAIN_DIR}/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
+		NO_DEFAULT_PATH
+		)
+
+	if(NOT CXX_COMPILER)
+		message(FATAL_ERROR "could not find arm-linux-gnueabihf-g++ compiler")
+	endif()
+	cmake_force_cxx_compiler(${CXX_COMPILER} GNU)
+
+	# compiler tools
+	foreach(tool objcopy nm ld)
+		string(TOUPPER ${tool} TOOL)
+		find_program(${TOOL} arm-linux-gnueabihf-${tool}
+			PATHS ${RPI_TOOLCHAIN_DIR}/gcc-linaro-arm-linux-gnueabihf-raspbian/bin
+			NO_DEFAULT_PATH
+			)
+		if(NOT ${TOOL})
+			message(FATAL_ERROR "could not find arm-linux-gnueabihf-${tool}")
+		endif()
+	endforeach()
+#endif
 
 # os tools
 foreach(tool echo grep rm mkdir nm cp touch make unzip)
