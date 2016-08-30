@@ -53,7 +53,6 @@
 #include <systemlib/err.h>
 
 #include <drivers/drv_baro.h>
-#include <drivers/drv_hrt.h>
 
 #include <board_config.h>
 
