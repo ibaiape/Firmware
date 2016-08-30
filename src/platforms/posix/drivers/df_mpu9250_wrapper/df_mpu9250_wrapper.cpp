@@ -61,6 +61,8 @@
 #include <drivers/drv_mag.h>
 #include <drivers/device/integrator.h>
 
+#include <mathlib/math/filter/LowPassFilter2p.hpp>
+
 #include <lib/conversion/rotation.h>
 
 #include <uORB/topics/parameter_update.h>
@@ -68,14 +70,16 @@
 #include <mpu9250/MPU9250.hpp>
 #include <DevMgr.hpp>
 
-// We don't want to auto publish, therefore set this to 0.
-#define MPU9250_NEVER_AUTOPUBLISH_US 0
+#define MPU9250_ACCEL_DEFAULT_DRIVER_FILTER_FREQ    30
+#define MPU9250_GYRO_DEFAULT_DRIVER_FILTER_FREQ     250
+#define MPU9250_DEFAULT_RATE                        1000000/MPU9250_MEASURE_INTERVAL_US
+#define MPU9250_ACCEL_MAX_OUTPUT_RATE               280
+#define MPU9250_GYRO_MAX_OUTPUT_RATE                MPU9250_ACCEL_MAX_OUTPUT_RATE
 
 
 extern "C" { __EXPORT int df_mpu9250_wrapper_main(int argc, char *argv[]); }
 
 using namespace DriverFramework;
-
 
 class DfMpu9250Wrapper : public MPU9250
 {
@@ -101,7 +105,7 @@ public:
 	/**
 	 * Print some debug info.
 	 */
-	void		info();
+    void	info();
 
 private:
 	int _publish(struct imu_sensor_data &data);
@@ -116,7 +120,9 @@ private:
 
 	orb_advert_t		    _mavlink_log_pub;
 
-	int			    _param_update_sub;
+    int                     _param_update_sub;
+
+    int8_t                  _mag_counter;
 
 	struct accel_calibration_s {
 		float x_offset;
@@ -151,19 +157,24 @@ private:
 	int			    _gyro_orb_class_instance;
 	int			    _mag_orb_class_instance;
 
+    math::LowPassFilter2p	_accel_filter_x;
+    math::LowPassFilter2p	_accel_filter_y;
+    math::LowPassFilter2p	_accel_filter_z;
+    math::LowPassFilter2p	_gyro_filter_x;
+    math::LowPassFilter2p	_gyro_filter_y;
+    math::LowPassFilter2p	_gyro_filter_z;
+
 	Integrator		    _accel_int;
 	Integrator		    _gyro_int;
 
 	unsigned		    _publish_count;
 
-	perf_counter_t		    _read_counter;
-	perf_counter_t		    _error_counter;
-	perf_counter_t		    _fifo_overflow_counter;
-	perf_counter_t		    _fifo_corruption_counter;
-	perf_counter_t		    _gyro_range_hit_counter;
-	perf_counter_t		    _accel_range_hit_counter;
-	perf_counter_t		    _mag_fifo_overflow_counter;
-	perf_counter_t		    _publish_perf;
+    perf_counter_t		_read_counter;
+    perf_counter_t		_error_counter;
+    perf_counter_t		_gyro_range_hit_counter;
+    perf_counter_t		_accel_range_hit_counter;
+    perf_counter_t		_mag_overflow_counter;
+    perf_counter_t		_publish_perf;
 
 	hrt_abstime		    _last_accel_range_hit_time;
 	uint64_t		    _last_accel_range_hit_count;
@@ -178,22 +189,27 @@ DfMpu9250Wrapper::DfMpu9250Wrapper(bool mag_enabled, enum Rotation rotation) :
 	_mag_topic(nullptr),
 	_mavlink_log_pub(nullptr),
 	_param_update_sub(-1),
+    _mag_counter(0),
 	_accel_calibration{},
 	_gyro_calibration{},
 	_mag_calibration{},
 	_accel_orb_class_instance(-1),
 	_gyro_orb_class_instance(-1),
 	_mag_orb_class_instance(-1),
-	_accel_int(MPU9250_NEVER_AUTOPUBLISH_US, false),
-	_gyro_int(MPU9250_NEVER_AUTOPUBLISH_US, true),
+    _accel_filter_x(MPU9250_DEFAULT_RATE, MPU9250_ACCEL_DEFAULT_DRIVER_FILTER_FREQ),
+    _accel_filter_y(MPU9250_DEFAULT_RATE, MPU9250_ACCEL_DEFAULT_DRIVER_FILTER_FREQ),
+    _accel_filter_z(MPU9250_DEFAULT_RATE, MPU9250_ACCEL_DEFAULT_DRIVER_FILTER_FREQ),
+    _gyro_filter_x(MPU9250_DEFAULT_RATE, MPU9250_GYRO_DEFAULT_DRIVER_FILTER_FREQ),
+    _gyro_filter_y(MPU9250_DEFAULT_RATE, MPU9250_GYRO_DEFAULT_DRIVER_FILTER_FREQ),
+    _gyro_filter_z(MPU9250_DEFAULT_RATE, MPU9250_GYRO_DEFAULT_DRIVER_FILTER_FREQ),
+    _accel_int(1000000 / MPU9250_ACCEL_MAX_OUTPUT_RATE),
+    _gyro_int(1000000 / MPU9250_GYRO_MAX_OUTPUT_RATE, true),
 	_publish_count(0),
 	_read_counter(perf_alloc(PC_COUNT, "mpu9250_reads")),
 	_error_counter(perf_alloc(PC_COUNT, "mpu9250_errors")),
-	_fifo_overflow_counter(perf_alloc(PC_COUNT, "mpu9250_fifo_overflows")),
-	_fifo_corruption_counter(perf_alloc(PC_COUNT, "mpu9250_fifo_corruptions")),
 	_gyro_range_hit_counter(perf_alloc(PC_COUNT, "mpu9250_gyro_range_hits")),
 	_accel_range_hit_counter(perf_alloc(PC_COUNT, "mpu9250_accel_range_hits")),
-	_mag_fifo_overflow_counter(perf_alloc(PC_COUNT, "mpu9250_mag_fifo_overflows")),
+    _mag_overflow_counter(perf_alloc(PC_COUNT, "mpu9250_mag_overflows")),
 	_publish_perf(perf_alloc(PC_ELAPSED, "mpu9250_publish")),
 	_last_accel_range_hit_time(0),
 	_last_accel_range_hit_count(0),
@@ -231,13 +247,11 @@ DfMpu9250Wrapper::~DfMpu9250Wrapper()
 {
 	perf_free(_read_counter);
 	perf_free(_error_counter);
-	perf_free(_fifo_overflow_counter);
-	perf_free(_fifo_corruption_counter);
 	perf_free(_gyro_range_hit_counter);
 	perf_free(_accel_range_hit_counter);
 
 	if (_mag_enabled) {
-		perf_free(_mag_fifo_overflow_counter);
+        perf_free(_mag_overflow_counter);
 	}
 
 	perf_free(_publish_perf);
@@ -265,23 +279,12 @@ int DfMpu9250Wrapper::start()
 		return -1;
 	}
 
-	if (_mag_enabled) {
-	}
-
 	/* Subscribe to param update topic. */
 	if (_param_update_sub < 0) {
 		_param_update_sub = orb_subscribe(ORB_ID(parameter_update));
 	}
 
-	/* Init device and start sensor. */
-	int ret = init();
-
-	if (ret != 0) {
-		PX4_ERR("MPU9250 init fail: %d", ret);
-		return ret;
-	}
-
-	ret = MPU9250::start();
+	int ret = MPU9250::start();
 
 	if (ret != 0) {
 		PX4_ERR("MPU9250 start fail: %d", ret);
@@ -315,13 +318,11 @@ void DfMpu9250Wrapper::info()
 {
 	perf_print_counter(_read_counter);
 	perf_print_counter(_error_counter);
-	perf_print_counter(_fifo_overflow_counter);
-	perf_print_counter(_fifo_corruption_counter);
 	perf_print_counter(_gyro_range_hit_counter);
 	perf_print_counter(_accel_range_hit_counter);
 
 	if (_mag_enabled) {
-		perf_print_counter(_mag_fifo_overflow_counter);
+        perf_print_counter(_mag_overflow_counter);
 	}
 
 	perf_print_counter(_publish_perf);
@@ -562,8 +563,15 @@ int DfMpu9250Wrapper::_publish(struct imu_sensor_data &data)
 {
 	/* Check if calibration values are still up-to-date. */
 	bool updated;
-	orb_check(_param_update_sub, &updated);
+    accel_report accel_report = {};
+    gyro_report gyro_report = {};
+    mag_report mag_report = {};
+    math::Vector<3> aval_integrated;
+    math::Vector<3> gval_integrated;
 
+    accel_report.timestamp = gyro_report.timestamp = hrt_absolute_time();
+
+	orb_check(_param_update_sub, &updated);
 	if (updated) {
 		parameter_update_s parameter_update;
 		orb_copy(ORB_ID(parameter_update), _param_update_sub, &parameter_update);
@@ -573,73 +581,50 @@ int DfMpu9250Wrapper::_publish(struct imu_sensor_data &data)
 		_update_mag_calibration();
 	}
 
-	math::Vector<3> vec_integrated_unused;
-	uint64_t integral_dt_unused;
-
-	math::Vector<3> accel_val((data.accel_m_s2_x - _accel_calibration.x_offset) * _accel_calibration.x_scale,
-				  (data.accel_m_s2_y - _accel_calibration.y_offset) * _accel_calibration.y_scale,
-				  (data.accel_m_s2_z - _accel_calibration.z_offset) * _accel_calibration.z_scale);
+    //should we do calibration after rotation? (official implementation seems wrong!)
+    math::Vector<3> aval((data.accel_m_s2_x - _accel_calibration.x_offset) * _accel_calibration.x_scale,
+                         (data.accel_m_s2_y - _accel_calibration.y_offset) * _accel_calibration.y_scale,
+                         (data.accel_m_s2_z - _accel_calibration.z_offset) * _accel_calibration.z_scale);
 
 	// apply sensor rotation on the accel measurement
-	accel_val = _rotation_matrix * accel_val;
+    aval = _rotation_matrix * aval;
 
-	_accel_int.put_with_interval(data.fifo_sample_interval_us,
-				     accel_val,
-				     vec_integrated_unused,
-				     integral_dt_unused);
+    accel_report.x = _accel_filter_x.apply(aval(0));
+    accel_report.y = _accel_filter_y.apply(aval(1));
+    accel_report.z = _accel_filter_z.apply(aval(2));
 
-	math::Vector<3> gyro_val(data.gyro_rad_s_x,
-				 data.gyro_rad_s_y,
-				 data.gyro_rad_s_z);
+    bool accel_notify = _accel_int.put(accel_report.timestamp, aval, aval_integrated, accel_report.integral_dt);
+    accel_report.x_integral = aval_integrated(0);
+    accel_report.y_integral = aval_integrated(1);
+    accel_report.z_integral = aval_integrated(2);
+
+    math::Vector<3> gval((data.gyro_rad_s_x - _gyro_calibration.x_offset) * _gyro_calibration.x_scale,
+                         (data.gyro_rad_s_y - _gyro_calibration.y_offset) * _gyro_calibration.y_scale,
+                         (data.gyro_rad_s_z - _gyro_calibration.z_offset) * _gyro_calibration.z_scale);
 
 	// apply sensor rotation on the gyro measurement
-	gyro_val = _rotation_matrix * gyro_val;
+    gval = _rotation_matrix * gval;
 
-	// Apply calibration after rotation.
-	gyro_val(0) = (gyro_val(0) - _gyro_calibration.x_offset) * _gyro_calibration.x_scale;
-	gyro_val(1) = (gyro_val(1) - _gyro_calibration.y_offset) * _gyro_calibration.y_scale;
-	gyro_val(2) = (gyro_val(2) - _gyro_calibration.z_offset) * _gyro_calibration.z_scale;
+    gyro_report.x = _gyro_filter_x.apply(gval(0));
+    gyro_report.y = _gyro_filter_y.apply(gval(1));
+    gyro_report.z = _gyro_filter_z.apply(gval(2));
 
-	_gyro_int.put_with_interval(data.fifo_sample_interval_us,
-				    gyro_val,
-				    vec_integrated_unused,
-				    integral_dt_unused);
-
-	// If we are not receiving the last sample from the FIFO buffer yet, let's stop here
-	// and wait for more packets.
-	if (!data.is_last_fifo_sample) {
-		return 0;
-	}
-
-	// The driver empties the FIFO buffer at 1kHz, however we only need to publish at 250Hz.
-	// Therefore, only publish every forth time.
-	++_publish_count;
-
-	if (_publish_count < 4) {
-		return 0;
-	}
-
-	_publish_count = 0;
+    bool gyro_notify = _gyro_int.put(gyro_report.timestamp, gval, gval_integrated, gyro_report.integral_dt);
+    gyro_report.x_integral = gval_integrated(0);
+    gyro_report.y_integral = gval_integrated(1);
+    gyro_report.z_integral = gval_integrated(2);
 
 	// Update all the counters.
 	perf_set_count(_read_counter, data.read_counter);
 	perf_set_count(_error_counter, data.error_counter);
-	perf_set_count(_fifo_overflow_counter, data.fifo_overflow_counter);
-	perf_set_count(_fifo_corruption_counter, data.fifo_overflow_counter);
 	perf_set_count(_gyro_range_hit_counter, data.gyro_range_hit_counter);
 	perf_set_count(_accel_range_hit_counter, data.accel_range_hit_counter);
 
 	if (_mag_enabled) {
-		perf_set_count(_mag_fifo_overflow_counter, data.mag_fifo_overflow_counter);
+        perf_set_count(_mag_overflow_counter, data.mag_overflow_counter);
 	}
 
 	perf_begin(_publish_perf);
-
-	accel_report accel_report = {};
-	gyro_report gyro_report = {};
-	mag_report mag_report = {};
-
-	accel_report.timestamp = gyro_report.timestamp = hrt_absolute_time();
 
 	if (_mag_enabled) {
 		mag_report.timestamp = accel_report.timestamp;
@@ -661,35 +646,19 @@ int DfMpu9250Wrapper::_publish(struct imu_sensor_data &data)
 	}
 
 	// TODO: remove these (or get the values)
-	gyro_report.x_raw = 0;
-	gyro_report.y_raw = 0;
-	gyro_report.z_raw = 0;
+	gyro_report.x_raw = NAN;
+	gyro_report.y_raw = NAN;
+	gyro_report.z_raw = NAN;
 
-	accel_report.x_raw = 0;
-	accel_report.y_raw = 0;
-	accel_report.z_raw = 0;
+	accel_report.x_raw = NAN;
+	accel_report.y_raw = NAN;
+	accel_report.z_raw = NAN;
 
 	if (_mag_enabled) {
-		mag_report.x_raw = 0;
-		mag_report.y_raw = 0;
-		mag_report.z_raw = 0;
+		mag_report.x_raw = NAN;
+		mag_report.y_raw = NAN;
+		mag_report.z_raw = NAN;
 	}
-
-	math::Vector<3> gyro_val_filt;
-	math::Vector<3> accel_val_filt;
-
-	// Read and reset.
-	math::Vector<3> gyro_val_integ = _gyro_int.get_and_filtered(true, gyro_report.integral_dt, gyro_val_filt);
-	math::Vector<3> accel_val_integ = _accel_int.get_and_filtered(true, accel_report.integral_dt, accel_val_filt);
-
-	// Use the filtered (by integration) values to get smoother / less noisy data.
-	gyro_report.x = gyro_val_filt(0);
-	gyro_report.y = gyro_val_filt(1);
-	gyro_report.z = gyro_val_filt(2);
-
-	accel_report.x = accel_val_filt(0);
-	accel_report.y = accel_val_filt(1);
-	accel_report.z = accel_val_filt(2);
 
 	if (_mag_enabled) {
 
@@ -704,33 +673,26 @@ int DfMpu9250Wrapper::_publish(struct imu_sensor_data &data)
 		mag_report.z = mag_val(2);
 	}
 
-	gyro_report.x_integral = gyro_val_integ(0);
-	gyro_report.y_integral = gyro_val_integ(1);
-	gyro_report.z_integral = gyro_val_integ(2);
-
-	accel_report.x_integral = accel_val_integ(0);
-	accel_report.y_integral = accel_val_integ(1);
-	accel_report.z_integral = accel_val_integ(2);
-
 	// TODO: when is this ever blocked?
 	if (!(m_pub_blocked)) {
 
-		if (_gyro_topic != nullptr) {
+        if (_gyro_topic != nullptr && accel_notify) {
 			orb_publish(ORB_ID(sensor_gyro), _gyro_topic, &gyro_report);
 		}
 
-		if (_accel_topic != nullptr) {
+        if (_accel_topic != nullptr && gyro_notify) {
 			orb_publish(ORB_ID(sensor_accel), _accel_topic, &accel_report);
 		}
 
 		if (_mag_enabled) {
-
+			_mag_counter++;
 			if (_mag_topic == nullptr) {
 				_mag_topic = orb_advertise_multi(ORB_ID(sensor_mag), &mag_report,
 								 &_mag_orb_class_instance, ORB_PRIO_LOW);
 
-			} else {
+            } else if (_mag_counter == 4) {
 				orb_publish(ORB_ID(sensor_mag), _mag_topic, &mag_report);
+				_mag_counter = 0;
 			}
 		}
 
@@ -757,7 +719,7 @@ int DfMpu9250Wrapper::_publish(struct imu_sensor_data &data)
 
 	// TODO: check the return codes of this function
 	return 0;
-};
+}
 
 
 namespace df_mpu9250_wrapper
@@ -779,12 +741,19 @@ int start(bool mag_enabled, enum Rotation rotation)
 		return -1;
 	}
 
-	int ret = g_dev->start();
+    int ret = g_dev->init();
 
 	if (ret != 0) {
-		PX4_ERR("DfMpu9250Wrapper start failed");
+        PX4_ERR("DfMpu9250Wrapper init failed");
 		return ret;
 	}
+
+    ret = g_dev->start();
+
+    if (ret != 0) {
+        PX4_ERR("DfMpu9250Wrapper start failed");
+        return ret;
+    }
 
 	// Open the IMU sensor
 	DevHandle h;
