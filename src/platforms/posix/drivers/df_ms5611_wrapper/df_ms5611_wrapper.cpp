@@ -36,6 +36,7 @@
  * Lightweight driver to access the MS5611 of the DriverFramework.
  */
 
+#include <drivers/drv_hrt.h>
 #include <px4_config.h>
 
 #include <sys/types.h>
