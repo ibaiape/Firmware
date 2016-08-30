@@ -176,7 +176,19 @@ eagle_default: posix_eagle_default qurt_eagle_default
 eagle_legacy_default: posix_eagle_legacy_driver_default qurt_eagle_legacy_driver_default
 excelsior_default: posix_excelsior_default qurt_excelsior_default
 
-# Deprecated config targets.
+posix_rpi_native:
+	$(call cmake-build,$@)
+
+posix_rpi_cross:
+	$(call cmake-build,$@)
+
+posix_erlebrain2_release:
+	$(call cmake-build,$@)
+
+posix_bebop_default:
+	$(call cmake-build,$@)
+
+posix: posix_sitl_default
 
 ros_sitl_default:
 	@echo "This target is deprecated. Use make 'posix_sitl_default gazebo' instead."
@@ -313,4 +325,3 @@ help:
 # Print a list of all config targets.
 list_config_targets:
 	@for targ in $(patsubst nuttx_%,[nuttx_]%,$(ALL_CONFIG_TARGETS)); do echo $$targ; done
-
