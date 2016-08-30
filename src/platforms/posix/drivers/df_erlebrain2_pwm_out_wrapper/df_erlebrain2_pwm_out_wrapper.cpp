@@ -130,7 +130,7 @@ int initialize_mixer(const char *mixer_filename)
 {
     char buf[2048];
     size_t buflen = sizeof(buf);
-    memset(buf, NULL, 2048);
+    memset(buf, 0, 2048);
 
     PX4_INFO("Trying to initialize mixer from config file %s", mixer_filename);
 
