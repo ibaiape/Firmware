@@ -13,6 +13,14 @@ else
 	echo "\$AUTOPILOT_HOST is set to $host"
 fi
 
+if [ -z ${AUTOPILOT_USER+x} ]; then
+	user=pi
+	echo "\$AUTOPILOT_USER is not set (use default: $user)"
+else
+	user=$AUTOPILOT_USER
+	echo "\$AUTOPILOT_USER is set to $user"
+fi
+
 echo "Uploading..."
 
 # Get last argument
@@ -27,6 +35,6 @@ do
 	fi
 	# echo "Pushing $arg to $last"
 	#adb push $arg $last
-	scp $arg pi@$host:$last
+	scp $arg $user@$host:$last
 	((i+=1))
 done
