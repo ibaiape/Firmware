@@ -188,6 +188,9 @@ posix_bebop_default:
 posix_erlebrain2_release:
 	$(call cmake-build,$@)
 
+posix_pxfmini_default:
+	$(call cmake-build,$@)
+
 posix: posix_sitl_default
 
 ros_sitl_default:
