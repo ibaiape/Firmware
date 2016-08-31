@@ -11,6 +11,7 @@ set(CMAKE_PROGRAM_PATH
 # or if it is for the RPi.
 add_definitions(
 	-D__PX4_POSIX_RPI
+	-D__PX4_POSIX_ERLEBRAIN2
 	-D__LINUX
     -D__RPI
 )
