@@ -180,6 +180,8 @@ using ::isfinite;
 #define PX4_ROOTFSDIR "/home/root"
 #elif defined(__PX4_POSIX_ERLEBRAIN2)
 #define PX4_ROOTFSDIR "/home/erle/px4"
+#elif defined(__PX4_POSIX_PXFMINI)
+#define PX4_ROOTFSDIR "/home/erle/px4"
 #else
 #define PX4_ROOTFSDIR "rootfs"
 #endif
