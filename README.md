@@ -60,6 +60,7 @@ This repository contains code supporting these boards:
   * MindPX V2.8 [Tutorial] (http://www.mindpx.net/assets/accessories/UserGuide_MindPX.pdf)
   * MindRacer V1.2 [Tutorial] (http://mindpx.net/assets/accessories/mindracer_user_guide_v1.2.pdf)
   * [Erle-Brain 2](http://erlerobotics.com/blog/product/erle-brain-v2/)
+  * [PXFmini](http://erlerobotics.com/blog/product/pxfmini/)
 
 ## Project Milestones
 
