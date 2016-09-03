@@ -85,6 +85,30 @@ elseif ("${BOARD}" STREQUAL "erlebrain2")
 			 DEPENDS px4
 			 DEST /usr/bin)
 
+elseif ("${BOARD}" STREQUAL "pxfmini")
+
+	add_executable(px4
+		${CMAKE_SOURCE_DIR}/src/platforms/posix/main.cpp
+		apps.h
+		)
+
+	target_link_libraries(px4
+		-Wl,--start-group
+		${module_libraries}
+		df_driver_framework
+		${df_driver_libs}
+		pthread m rt
+		-Wl,--end-group
+		)
+
+	px4_add_scp_push(OUT upload
+			 OS ${OS}
+			 BOARD ${BOARD}
+			 FILES ${CMAKE_CURRENT_BINARY_DIR}/px4
+			       ${CMAKE_SOURCE_DIR}/posix-configs/rpi/pxfmini.config
+			 DEPENDS px4
+			 DEST /usr/bin)
+
 elseif ("${BOARD}" STREQUAL "bebop")
 
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static")
