@@ -63,6 +63,8 @@ __END_DECLS
 #  define	HW_ARCH "RPI"
 #elif defined(CONFIG_ARCH_BOARD_ERLEBRAIN2)
 #  define	HW_ARCH "ERLE-BRAIN2"
+#elif defined(CONFIG_ARCH_BOARD_PXFMINI)
+#  define	HW_ARCH "PXFMINI"
 #elif defined(CONFIG_ARCH_BOARD_BEBOP)
 #  define	HW_ARCH "BEBOP"
 #else
