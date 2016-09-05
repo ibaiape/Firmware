@@ -65,3 +65,46 @@ This repository contains code supporting these boards:
 ## Project Milestones
 
 The PX4 software and Pixhawk hardware (which has been designed for it) has been created in 2011 by Lorenz Meier.
+
+WORK GUIDE UNDER OSX
+===========
+
+### Dependencies
+
+  * Installing brew, [link](http://brew.sh/).
+
+```
+brew tap PX4/homebrew-px4
+brew tap osrf/simulation
+brew update
+brew install git bash-completion genromfs kconfig-frontends gcc-arm-none-eabi
+brew install astyle cmake
+```
+
+* Python packages:
+
+```
+sudo easy_install pip
+sudo pip install pyserial empy
+```
+
+  * Raspberry Pi Toolchain [link](http://www.welzels.de/blog/en/arm-cross-compiling-with-mac-os-x/), download the `arm-linux-gnueabihf-raspbian 4.9 2014.05 for Mac OS X (5687)` package.
+
+### Compile
+
+  * Clone the repo:
+
+`git clone https://github.com/erlerobot/Firmware_private`
+`cd Firmware_private`
+
+  * Set the environment:
+
+`export RPI_TOOLCHAIN_DIR=/usr/local/linaro/arm-linux-gnueabihf-raspbian`
+
+  * Compile for Erle-Brain2:
+
+`make posix_erlebrain2_default`
+
+  * Compile for PXFmini:
+
+`make posix_pxfmini_default`
