@@ -25,9 +25,9 @@ set(config_module_list
 	platforms/posix/drivers/df_gpioled_wrapper
 	platforms/posix/drivers/df_erlebrain2_rc_in_wrapper
     platforms/posix/drivers/df_erlebrain2_pwm_out_wrapper
-	platforms/posix/drivers/df_mpu9250_wrapper
+	#platforms/posix/drivers/df_mpu9250_wrapper
 	platforms/posix/drivers/df_ms5611_wrapper
-	platforms/posix/drivers/df_hmc5883_wrapper
+	#platforms/posix/drivers/df_hmc5883_wrapper
 
 	#
 	# System commands
@@ -107,8 +107,8 @@ set(config_df_driver_list
 	common
 	erlebrain2_rc_in
 	gpioled
-	hmc5883
-	mpu9250
+	#hmc5883
+	#mpu9250
 	ms5611
 	pca9685
 	#erlebrain2_pwm_out
