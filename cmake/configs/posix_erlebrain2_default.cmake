@@ -27,7 +27,7 @@ set(config_module_list
     platforms/posix/drivers/df_erlebrain2_pwm_out_wrapper
 	platforms/posix/drivers/df_mpu9250_wrapper
 	platforms/posix/drivers/df_ms5611_wrapper
-	#platforms/posix/drivers/df_hmc5883_wrapper
+	platforms/posix/drivers/df_hmc5883_wrapper
 
 	#
 	# System commands
