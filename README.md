@@ -108,3 +108,4 @@ sudo pip install pyserial empy
   * Compile for PXFmini:
 
 `make posix_pxfmini_default`
+ 
