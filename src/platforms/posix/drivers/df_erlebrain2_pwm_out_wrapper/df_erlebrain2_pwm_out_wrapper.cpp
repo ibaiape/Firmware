@@ -187,7 +187,8 @@ int pwm_initialize()
 {
     int ret;
 
-    g_dev = new PCA9685("/dev/i2c-1", 0x40, true, 27, FREQUENCY_PWM, 15-NUM_PWM);
+//    g_dev = new PCA9685("/dev/i2c-1", 0x40, true, 27, FREQUENCY_PWM, 15-NUM_PWM);
+    g_dev = new PCA9685("/dev/i2c-1", 0x40, true, 27, FREQUENCY_PWM, 3);
 
     ret = g_dev->init();
 
@@ -440,4 +441,3 @@ df_erlebrain2_pwm_out_wrapper_main(int argc, char *argv[])
 
     return ret;
 }
-
