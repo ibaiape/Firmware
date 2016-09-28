@@ -163,7 +163,7 @@ int DfHmc9250Wrapper::start()
 
 	if (ret != 0) {
 		PX4_ERR("HMC5883 start fail: %d", ret);
-		return ret;
+		//return ret;
 	}
 
 	/* Force getting the calibration values. */
@@ -345,7 +345,7 @@ int start(enum Rotation rotation)
 
 	if (ret != 0) {
 		PX4_ERR("DfHmc9250Wrapper start failed");
-		return ret;
+	//	return ret;
 	}
 
 	// Open the MAG sensor
@@ -355,10 +355,11 @@ int start(enum Rotation rotation)
 	if (!h.isValid()) {
 		DF_LOG_INFO("Error: unable to obtain a valid handle for the receiver at: %s (%d)",
 			    MAG_DEVICE_PATH, h.getError());
-		return -1;
+		//return -1;
 	}
 
 	DevMgr::releaseHandle(h);
+		PX4_ERR("DfHmc9250Wrapper OK");
 
 	return 0;
 }
@@ -413,7 +414,7 @@ int
 df_hmc5883_wrapper_main(int argc, char *argv[])
 {
 	int ch;
-	enum Rotation rotation = ROTATION_NONE;
+	enum Rotation rotation = ROTATION_ROLL_180;
 	int ret = 0;
 	int myoptind = 1;
 	const char *myoptarg = NULL;
