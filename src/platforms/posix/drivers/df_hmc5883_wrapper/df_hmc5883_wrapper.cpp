@@ -112,6 +112,8 @@ private:
 	} _mag_calibration;
 
 	math::Matrix<3, 3>      _rotation_matrix;
+	math::Matrix<3, 3>      _rotation_matrix_yaw_270;
+	math::Matrix<3, 3>      _rotation_matrix_yaw_90;
 
 	int			_mag_orb_class_instance;
 
@@ -137,6 +139,8 @@ DfHmc9250Wrapper::DfHmc9250Wrapper(enum Rotation rotation) :
 
 	// Get sensor rotation matrix
 	get_rot_matrix(rotation, &_rotation_matrix);
+	get_rot_matrix(ROTATION_YAW_90, &_rotation_matrix_yaw_90);
+	get_rot_matrix(ROTATION_YAW_270, &_rotation_matrix_yaw_270);
 }
 
 DfHmc9250Wrapper::~DfHmc9250Wrapper()
@@ -273,21 +277,23 @@ int DfHmc9250Wrapper::_publish(struct mag_sensor_data &data)
 	/* The standard external mag by 3DR has x pointing to the
 	 * right, y pointing backwards, and z down, therefore switch x
 	 * and y and invert y. */
-	const float tmp = data.field_x_ga;
-	data.field_x_ga = -data.field_y_ga;
-	data.field_y_ga = tmp;
+//	const float tmp = data.field_x_ga;
+//	data.field_x_ga = -data.field_y_ga;
+//	data.field_y_ga = tmp;
 
 	// TODO: remove these (or get the values)
 	mag_report.x_raw = 0;
 	mag_report.y_raw = 0;
 	mag_report.z_raw = 0;
 
-	math::Vector<3> mag_val(data.field_x_ga,
+	math::Vector<3> mag_val(-data.field_x_ga,
 				data.field_y_ga,
-				data.field_z_ga);
+				-data.field_z_ga);
 
 	// apply sensor rotation on the accel measurement
+	mag_val = _rotation_matrix_yaw_90 * mag_val;
 	mag_val = _rotation_matrix * mag_val;
+//	mag_val = _rotation_matrix_yaw_270 * mag_val;
 
 	// Apply calibration after rotation.
 	mag_report.x = (mag_val(0) - _mag_calibration.x_offset) * _mag_calibration.x_scale;
