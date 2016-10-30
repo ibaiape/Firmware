@@ -132,7 +132,7 @@ commander land
 
 ### Quadcopter with optical flow (Iris):
 ```bash
-make posix_sitl_default gazebo
+make posix_sitl_default gazebo_iris_opt_flow
 ```
 
 ### Standard VTOL :
