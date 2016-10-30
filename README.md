@@ -108,4 +108,39 @@ sudo pip install pyserial empy
   * Compile for PXFmini:
 
 `make posix_pxfmini_default`
- 
+
+SIMULATION
+===========
+
+### Install simulator (OS X instructions)
+```bash
+brew tap PX4/homebrew-px4
+brew tap osrf/simulation
+brew update
+brew cask install xquartz
+brew install homebrew/science/opencv
+brew install gazebo7
+```
+
+
+### Quadcopter (Iris):
+```bash
+make posix_sitl_default gazebo
+commander takeoff # take off the drone
+commander land
+```
+
+### Quadcopter with optical flow (Iris):
+```bash
+make posix_sitl_default gazebo
+```
+
+### Standard VTOL :
+```bash
+make posix_sitl_default gazebo_standard_vtol
+```
+
+### Tailsitter VTOL:
+```bash
+make posix_sitl_default gazebo_tailsitter
+```
