@@ -125,7 +125,7 @@ brew install gazebo7
 
 ### Quadcopter (Iris):
 ```bash
-make posix_sitl_default gazebo
+make posix_sitl_default gazebo_erlecopter
 commander takeoff # take off the drone
 commander land
 ```
