@@ -33,7 +33,7 @@ set(config_module_list
 	systemcmds/top
 	systemcmds/motor_ramp
 
-	#ros
+	ros/example
 
 	modules/attitude_estimator_q
 	modules/commander

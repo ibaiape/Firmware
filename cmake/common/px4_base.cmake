@@ -763,8 +763,8 @@ function(px4_add_common_flags)
 
 	set(cxx_compile_flags
 		-g
-		-fno-exceptions
-		-fno-rtti
+		#-fno-exceptions
+		#-fno-rtti
 		-std=gnu++0x
 		-fno-threadsafe-statics
 		-DCONFIG_WCHAR_BUILTIN
