@@ -128,8 +128,9 @@ class Parameter(object):
         """
         Return list of existing bitmask codes in convenient order
         """
-        keys = self.bitmask.keys()
-        return sorted(keys, key=float)
+        keys = list(self.bitmask.keys())
+        keys.sort(key=float)
+        return keys
 
     def GetBitmaskBit(self, index):
         """
@@ -301,7 +302,7 @@ class SourceParser(object):
                     self.param_groups[group].AddParameter(param)
                 state = None
         return True
-    
+
     def IsNumber(self, numberString):
         try:
             float(numberString)
