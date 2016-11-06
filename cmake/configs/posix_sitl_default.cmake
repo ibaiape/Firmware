@@ -33,6 +33,8 @@ set(config_module_list
 	systemcmds/top
 	systemcmds/motor_ramp
 
+	#ros
+
 	modules/attitude_estimator_q
 	modules/commander
 	modules/dataman
@@ -128,4 +130,3 @@ if(REPLAY_FILE)
 	message("Building with uorb publisher rules support")
 	add_definitions(-DORB_USE_PUBLISHER_RULES)
 endif()
-
