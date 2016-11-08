@@ -763,6 +763,8 @@ function(px4_add_common_flags)
 
 	set(cxx_compile_flags
 		-g
+		# Commented these lines
+		# for compatibility with ROS 2.0
 		#-fno-exceptions
 		#-fno-rtti
 		-std=gnu++0x
