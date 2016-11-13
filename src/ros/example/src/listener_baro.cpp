@@ -21,3 +21,10 @@ int main(int argc, char * argv[])
 
   return 0;
 }
+
+__EXPORT int listener_baro_main();
+int listener_baro_main()
+{
+	printf("listener_baro main\n");
+	return 0;
+}

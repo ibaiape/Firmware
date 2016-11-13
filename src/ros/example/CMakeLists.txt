@@ -31,7 +31,6 @@ macro(targets)
   # Examples of Publish/Subscribe with Topics
   #custom_executable(. talker_baro)
   #custom_executable(. listener_baro)
-
 endmacro()
 
 call_for_each_rmw_implementation(targets GENERATE_DEFAULT)
@@ -45,21 +44,23 @@ include_directories(
   ${rclcpp_INCLUDE_DIRS}
   ${std_interfaces_INCLUDE_DIRS}
 )
-add_library(ros__example src/talker_baro.cpp)
+add_library(ros__example src/listener_baro.cpp)
 target_link_libraries(ros__example ${rclcpp_LIBRARIES})
 
+add_library(listener_baro src/listener_baro.cpp)
+target_link_libraries(listener_baro ${rclcpp_LIBRARIES})
 
 ament_package()
 
-#px4_add_module(
-#    MODULE systemcmds__listener_baro
-#    MAIN listener_baro
-#    STACK_MAIN 1200
-#    COMPILE_FLAGS
-#        -Wno-write-strings
-#    SRCS
-#        src/listener_baro.cpp
-#    DEPENDS
-#        #platforms__common
-#    )
+px4_add_module(
+    MODULE systemcmds__listener_baro
+    MAIN listener_baro
+    STACK_MAIN 1200
+    COMPILE_FLAGS
+        -Wno-write-strings
+    SRCS
+        src/listener_baro.cpp
+    DEPENDS
+        platforms__common
+)
 # vim: set noet ft=cmake fenc=utf-8 ff=unix :
