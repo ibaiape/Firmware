@@ -52,15 +52,15 @@ target_link_libraries(listener_baro ${rclcpp_LIBRARIES})
 
 ament_package()
 
-px4_add_module(
-    MODULE systemcmds__listener_baro
-    MAIN listener_baro
-    STACK_MAIN 1200
-    COMPILE_FLAGS
-        -Wno-write-strings
-    SRCS
-        src/listener_baro.cpp
-    DEPENDS
-        platforms__common
-)
+# px4_add_module(
+#     MODULE systemcmds__listener_baro
+#     MAIN listener_baro
+#     STACK_MAIN 1200
+#     COMPILE_FLAGS
+#         -Wno-write-strings
+#     SRCS
+#         src/listener_baro.cpp
+#     DEPENDS
+#         platforms__common
+# )
 # vim: set noet ft=cmake fenc=utf-8 ff=unix :

@@ -30,10 +30,10 @@ set(config_module_list
 	systemcmds/sd_bench
 	systemcmds/topic_listener
 	systemcmds/ver
-	systemcmds/cmd_test
 	systemcmds/top
 	systemcmds/motor_ramp
 
+	cmd_test
 	ros/example
 
 	modules/attitude_estimator_q
