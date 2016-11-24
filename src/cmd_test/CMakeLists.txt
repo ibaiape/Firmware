@@ -31,7 +31,7 @@
 #
 ############################################################################
 px4_add_module(
-	MODULE systemcmds__cmd_test
+	MODULE cmd_test
 	MAIN cmd_test
 	STACK_MAIN 1024
 	COMPILE_FLAGS

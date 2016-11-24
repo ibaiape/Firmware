@@ -33,7 +33,7 @@ set(config_module_list
 	systemcmds/top
 	systemcmds/motor_ramp
 
-	#cmd_test
+	cmd_test
 	ros/example
 
 	modules/attitude_estimator_q
