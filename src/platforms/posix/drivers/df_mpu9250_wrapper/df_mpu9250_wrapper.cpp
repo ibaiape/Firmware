@@ -621,7 +621,7 @@ int DfMpu9250Wrapper::_publish(struct imu_sensor_data &data)
 	perf_set_count(_accel_range_hit_counter, data.accel_range_hit_counter);
 
 	if (_mag_enabled) {
-        perf_set_count(_mag_overflow_counter, data.mag_overflow_counter);
+        perf_set_count(_mag_overflow_counter, data.mag_fifo_overflow_counter);
 	}
 
 	perf_begin(_publish_perf);
