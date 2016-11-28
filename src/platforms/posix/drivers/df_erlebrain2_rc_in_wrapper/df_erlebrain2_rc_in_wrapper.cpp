@@ -36,8 +36,9 @@
  * Lightweight driver to access the RCIN of the DriverFramework.
  *
  * @author @mocibb
- * @author Víctor Mayoral Vilches <victor@erlerobot.com> 
- * 
+ * @author Víctor Mayoral Vilches <victor@erlerobot.com>
+ * @author Alejandro Hernández Cordero <alex@erlerobotics.com>
+ *
  */
 
 #include <drivers/drv_hrt.h>
@@ -114,7 +115,7 @@ int DfErleBrain2RcInputWrapper::init() {
 
 int DfErleBrain2RcInputWrapper::_publish(struct rc_channel_data &data){
     uint64_t ts = hrt_absolute_time();
-    _data.timestamp_publication = ts;
+    //_data.timestamp_publication = ts;
     _data.timestamp_last_signal = ts;
     for (int i = 0; i < data.channel_count; ++i) {
         _data.values[i] = data.values[i];
