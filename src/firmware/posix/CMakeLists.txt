@@ -133,7 +133,7 @@ add_custom_target(run_config
 	${config_sitl_rcS_dir}
 	${config_sitl_debugger}
 	${config_sitl_viewer}
-	${config_sitl_model} 
+	${config_sitl_model}
 	${PX4_SOURCE_DIR}
 	${PX4_BINARY_DIR}
 	WORKING_DIRECTORY ${SITL_WORKING_DIR}
@@ -153,7 +153,7 @@ set_target_properties(sitl_gazebo PROPERTIES EXCLUDE_FROM_ALL TRUE)
 # create targets for each viewer/model/debugger combination
 set(viewers none jmavsim gazebo replay)
 set(debuggers none gdb lldb ddd valgrind)
-set(models none iris iris_opt_flow tailsitter standard_vtol plane solo typhoon_h480)
+set(models none iris iris_opt_flow tailsitter standard_vtol plane solo typhoon_h480 erlecopter)
 set(all_posix_vmd_make_targets)
 foreach(viewer ${viewers})
 	foreach(debugger ${debuggers})
