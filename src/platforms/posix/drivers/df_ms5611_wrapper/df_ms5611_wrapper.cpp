@@ -60,6 +60,7 @@
 #include <ms5611/MS5611.hpp>
 #include <DevMgr.hpp>
 
+#define BARO_DEVICE_PATH "/dev/spidev0.0"
 
 extern "C" { __EXPORT int df_ms5611_wrapper_main(int argc, char *argv[]); }
 
