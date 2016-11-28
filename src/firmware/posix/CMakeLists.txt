@@ -65,7 +65,7 @@ elseif ("${BOARD}" STREQUAL "erlebrain2")
 
 	add_executable(px4
 		${CMAKE_SOURCE_DIR}/src/platforms/posix/main.cpp
-		apps.h
+		apps.cpp
 		)
 
 	target_link_libraries(px4
