@@ -1,9 +1,10 @@
 #include <iostream>
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/float32.hpp"
 
-int main(int argc, char * argv[])
+extern "C" __EXPORT int talker_baro_main(int argc, char *argv[]);
+
+int talker_baro_main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   auto node = rclcpp::node::Node::make_shared("talker_baro");
