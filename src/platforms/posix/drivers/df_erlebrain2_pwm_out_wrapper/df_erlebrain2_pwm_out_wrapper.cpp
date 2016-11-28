@@ -36,7 +36,8 @@
  * Lightweight driver to access the PWM of the DriverFramework.
  *
  * @author @mocibb
- * @author Víctor Mayoral Vilches <victor@erlerobot.com> 
+ * @author Víctor Mayoral Vilches <victor@erlerobot.com>
+ * @author Alejandro Hernández Cordero <alex@erlerobotics.com>
  *
  */
 
@@ -61,6 +62,8 @@
 
 #include <pca9685/PCA9685.hpp>
 #include <DevMgr.hpp>
+
+#define NAN (0.0f/0.0f)
 
 extern "C" { __EXPORT int df_erlebrain2_pwm_out_wrapper_main(int argc, char *argv[]); }
 
