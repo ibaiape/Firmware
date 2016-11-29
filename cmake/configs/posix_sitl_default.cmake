@@ -34,7 +34,7 @@ set(config_module_list
 	systemcmds/motor_ramp
 
 	cmd_test
-	ros/example
+	ros/examples/baro_pubsub
 
 	modules/attitude_estimator_q
 	modules/commander

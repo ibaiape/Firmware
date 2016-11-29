@@ -11,17 +11,17 @@ include_directories(
 )
 
 px4_add_module(
-	MODULE ros__example
-	MAIN listener_baro
+	MODULE ros__examples__baro_pubsub
+	MAIN baro_pubsub
   STACK_MAIN 5700
 	STACK_MAX 13000
 	COMPILE_FLAGS
 		-std=c++11 -Wall -Wextra
 	SRCS
-		src/listener_baro.cpp
+		src/baro_pubsub.cpp
 	DEPENDS
 		platforms__common
 )
-ament_target_dependencies(ros__example "rclcpp" "std_msgs")
+ament_target_dependencies(ros__examples__baro_pubsub "rclcpp" "std_msgs")
 
 # vim: set noet ft=cmake fenc=utf-8 ff=unix :

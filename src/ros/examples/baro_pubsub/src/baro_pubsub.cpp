@@ -7,7 +7,7 @@
 #include <px4_posix.h>
 #include <boost/bind.hpp>
 
-extern "C" __EXPORT int listener_baro_main(int argc, char *argv[]);
+extern "C" __EXPORT int baro_pubsub_main(int argc, char *argv[]);
 
 //std::shared_ptr<ROS2Baro> ros2baro_node_ptr;
 
@@ -146,11 +146,11 @@ void ROS2Baro::chatterCallback(const std_msgs::msg::Float32::SharedPtr msg)
   std::cout << "I heard: [" << msg->data << "]" << std::endl;
 }
 
-int listener_baro_main(int argc, char *argv[])
+int baro_pubsub_main(int argc, char *argv[])
 {
 
   if (argc < 2) {
-		printf("usage: listener_baro {talker|listener}");
+		printf("usage: baro_pubsub {talker|listener}");
 		return 1;
 	}
 
