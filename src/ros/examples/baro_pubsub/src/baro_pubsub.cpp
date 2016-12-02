@@ -1,11 +1,9 @@
 #include <iostream>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/float32.hpp"
 
 #include <px4_posix.h>
-#include <boost/bind.hpp>
 
 extern "C" __EXPORT int baro_pubsub_main(int argc, char *argv[]);
 
