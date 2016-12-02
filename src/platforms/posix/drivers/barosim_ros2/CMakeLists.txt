@@ -31,12 +31,6 @@
 #
 ############################################################################
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rmw REQUIRED)
-find_package(rmw_implementation_cmake REQUIRED)
-find_package(std_msgs REQUIRED)
-
 include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
