@@ -2,6 +2,12 @@ include(posix/px4_impl_posix)
 
 set(CMAKE_TOOLCHAIN_FILE ${PX4_SOURCE_DIR}/cmake/toolchains/Toolchain-native.cmake)
 
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rmw REQUIRED)
+find_package(rmw_implementation_cmake REQUIRED)
+find_package(std_msgs REQUIRED)
+
 set(config_module_list
 	drivers/boards/sitl
 	drivers/device
@@ -14,6 +20,7 @@ set(config_module_list
 	platforms/posix/drivers/adcsim
 	platforms/posix/drivers/airspeedsim
 	platforms/posix/drivers/barosim
+	platforms/posix/drivers/barosim_ros2
 	platforms/posix/drivers/gpssim
 	platforms/posix/drivers/gyrosim
 	platforms/posix/drivers/ledsim
@@ -34,7 +41,7 @@ set(config_module_list
 	systemcmds/motor_ramp
 
 	cmd_test
-	ros/examples/baro_pubsub
+	#ros/examples/baro_pubsub
 
 	modules/attitude_estimator_q
 	modules/commander
@@ -53,7 +60,7 @@ set(config_module_list
 	modules/local_position_estimator
 	modules/replay
 	modules/sdlog2
-	modules/sensors
+	modules/sensors_ros2
 	modules/simulator
 	modules/systemlib
 	modules/systemlib/mixer
