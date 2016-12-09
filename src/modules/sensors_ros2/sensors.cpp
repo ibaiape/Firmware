@@ -103,6 +103,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/Float32.hpp"
+#include "sensor_msgs/msg/nav_sat_fix.hpp"
 
 #include <DevMgr.hpp>
 
@@ -2547,7 +2548,7 @@ Sensors::task_main()
 	auto sub = node->create_subscription<std_msgs::msg::Float32>(
      "sensor_baro",
 		 cb_std_function,
-		 rmw_qos_profile_default);
+		 rmw_qos_profile_sensor_data);
 
 	/* reload calibration params */
 	parameter_update_poll(true);

@@ -164,9 +164,7 @@ BAROSIMROS2::init()
 
 	auto node = rclcpp::node::Node::make_shared("talker_baro");
 
-	rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-	custom_qos_profile.depth = 7;
-	pub_baro = node->create_publisher<std_msgs::msg::Float32>("sensor_baro", custom_qos_profile);
+	pub_baro = node->create_publisher<std_msgs::msg::Float32>("sensor_baro", rmw_qos_profile_sensor_data);
 
 	// this do..while is goto without goto //
 	do {
