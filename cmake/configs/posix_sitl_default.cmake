@@ -7,6 +7,7 @@ find_package(rclcpp REQUIRED)
 find_package(rmw REQUIRED)
 find_package(rmw_implementation_cmake REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 set(config_module_list
 	drivers/boards/sitl
@@ -22,6 +23,7 @@ set(config_module_list
 	platforms/posix/drivers/barosim
 	platforms/posix/drivers/barosim_ros2
 	platforms/posix/drivers/gpssim
+	platforms/posix/drivers/gpssim_ros2
 	platforms/posix/drivers/gyrosim
 	platforms/posix/drivers/ledsim
 	platforms/posix/drivers/rgbledsim
@@ -36,6 +38,7 @@ set(config_module_list
 	systemcmds/reboot
 	systemcmds/sd_bench
 	systemcmds/topic_listener
+	systemcmds/topic_ros2_listener
 	systemcmds/ver
 	systemcmds/top
 	systemcmds/motor_ramp
