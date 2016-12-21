@@ -59,7 +59,29 @@ This repository contains code supporting these boards:
   * STM32F4Discovery (basic support) [Tutorial](https://pixhawk.org/modules/stm32f4discovery)
   * MindPX V2.8 [Tutorial] (http://www.mindpx.net/assets/accessories/UserGuide_MindPX.pdf)
   * MindRacer V1.2 [Tutorial] (http://mindpx.net/assets/accessories/mindracer_user_guide_v1.2.pdf)
-  
+
 ## Project Milestones
 
 The PX4 software and Pixhawk hardware (which has been designed for it) has been created in 2011 by Lorenz Meier.
+
+# Compile
+
+Source your ROS 2.0 workspace
+
+```
+source ~/ros2_ws/install/setup.bash
+```
+
+simulate Erle-Copter
+
+```
+make posix_sitl_default gazebo_erlecopter
+commander takeoff # take off the drone
+commander land    # land the drone
+```
+
+Now we are able to listen in the sensor topic just typing:
+
+```
+ros2_listener sensor_baro
+```
