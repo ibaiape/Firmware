@@ -25,12 +25,37 @@ The project has been conducted using [Erle-Copter](http://erlerobotics.com/blog/
 A demo showing the barometer being published as a ROS 2.0 topic was demonstrated [here](https://www.youtube.com/watch?v=_eTzJZE5XV0&feature=youtu.be).
 
 ## How to reproduce
+### Install simulator
+
+#### OS X instructions
+
+```
+brew tap PX4/homebrew-px4
+brew tap osrf/simulation
+brew update
+brew cask install xquartz
+brew install homebrew/science/opencv
+brew install gazebo7
+```
+
+#### Linux instructions
+
+```
+sudo apt-get install libopencv-dev gazebo7 libgazebo7-dev
+```
+
 ### Source your ROS 2.0 workspace
+
+You need to source a ROS 2.0 workspace. If you don't have installed ROS 2.0 please follow this [instructions](https://github.com/ros2/ros2/wiki/Installation).
+
 ```
 source ~/ros2_ws/install/setup.bash
 ```
 
 ### Simulate Erle-Copter
+
+Compile and launch the simulation:
+
 ```
 make posix_sitl_default gazebo_erlecopter
 
