@@ -1,87 +1,46 @@
-## PX4 Pro Drone Autopilot ##
+## PX4: Towards a ROS 2.0 native drone ##
 
-[![Releases](https://img.shields.io/github/release/PX4/Firmware.svg)](https://github.com/PX4/Firmware/releases) [![DOI](https://zenodo.org/badge/22634/PX4/Firmware.svg)](https://zenodo.org/badge/latestdoi/22634/PX4/Firmware) [![Build Status](https://travis-ci.org/PX4/Firmware.svg?branch=master)](https://travis-ci.org/PX4/Firmware) [![Coverity Scan](https://scan.coverity.com/projects/3966/badge.svg?flat=1)](https://scan.coverity.com/projects/3966?tab=overview)
+This project presents a *work in progress* prototype of the concept of a software autopilot for drones that speaks ROS 2.0 natively. The existing prototype served the purpose of validating the feasibility of having ROS 2.0 sitting at the core of a drone autopilot (the brain of the drone) and puts together a framework whereto start porting sensors (even if they’re virtual sensors such as the one in the prototype for the purposes of SITL) to ROS 2.0 which eventually will lead to deploy the prototype in a real, Linux-based autopilot similar to [Erle-Brain 3](http://erlerobotics.com/blog/erle-brain-3/).
 
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/PX4/Firmware?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+The project has been conducted using [Erle-Copter](http://erlerobotics.com/blog/erle-copter/) Linux drone kit simulated in [Gazebo](gazebosim.org) simulator.
 
-This repository holds the [PX4 Pro](http://px4.io) flight control solution for drones, with the main applications located in the src/modules directory. It also contains the PX4 Drone Middleware Platform, which provides drivers and middleware to run drones.
+## Project status
+- [x] SITL Barometer ported to ROS 2.0 (publication and subscription)
+- [x] `systemcmd` tool for subscribing to ROS 2.0 topics
+- [x] SITL GPS ported to ROS 2.0 (publication)
+- [ ] SITL GPS ported to ROS 2.0 (subscription)
+- [ ] SITL Gyroscope ported to ROS 2.0 (publication and subscription)
+- [ ] SITL Accelerometer ported to ROS 2.0 (publication and subscription)
+- [ ] SITL Gyroscope ported to ROS 2.0 (publication and subscription)
+- [ ] SITL ADC ported to ROS 2.0 (publication and subscription)
+- [ ] SITL Airspeed ported to ROS 2.0 (publication and subscription)
+- ...
 
-*   Official Website: http://px4.io (License: BSD 3-clause, [LICENSE.md](https://github.com/PX4/Firmware/blob/master/LICENSE.md))
-*   Supported airframes (more experimental types than listed here are supported):
-  * [Multicopters](http://px4.io/portfolio_category/multicopter/)
-  * [Fixed wing](http://px4.io/portfolio_category/plane/)
-  * [VTOL](http://px4.io/portfolio_category/vtol/)
-*   Releases: [Downloads](https://github.com/PX4/Firmware/releases)
+## How to contribute
+- Select one of the unfinished tasks from above
+- Open up an issue indicating the task you'll be working on
+- Submit a PR and get it accepted
 
-### Users ###
+## Demo
+A demo showing the barometer being published as a ROS 2.0 topic was demonstrated [here](https://www.youtube.com/watch?v=_eTzJZE5XV0&feature=youtu.be).
 
-Please refer to the [user documentation](http://px4.io/user-guide/) and [user forum](http://discuss.px4.io) for flying drones with the PX4 flight stack.
-
-### Developers ###
-
-  * [Developer Forum](http://discuss.px4.io)
-  * [Guide for Contributions](https://github.com/PX4/Firmware/blob/master/CONTRIBUTING.md)
-  * [Developer guide](http://dev.px4.io)
-
-## Maintenance Team
-
-  * Project / Founder - [Lorenz Meier](http://github.com/LorenzMeier)
-  * Dev Call - [Mark Whitehorn](http://github.com/kd0aij), [Ramon Roche](http://github.com/mrpollo)
-  * Communication Architecture - [Beat Kueng](http://github.com/bkueng), [Julian Oes](http://github.com/JulianOes)
-  * UI / UX - [Gus Grubba](http://github.com/dogmaphobic)
-  * Multicopter Flight Control - [Dennis Mannhart](http://github.com/Stifael), [Matthias Grob](http://github.com/MaEtUgR)
-  * VTOL Flight Control - [Roman Bapst](http://github.com/tumbili), [Andreas Antener](http://github.com/AndreasAntener), [Sander Smeets](http://github.com/sanderux)
-  * Fixed Wing Flight Control - [Daniel Agar](http://github.com/dagar), [Paul Riseborough](http://github.com/priseborough)
-  * Racers - [Mark Whitehorn](http://github.com/kd0aij)
-  * OS / drivers - [David Sidrane](http://github.com/david_s5)
-  * UAVCAN / Industrial - [Pavel Kirienko](http://github.com/pavel-kirienko)
-  * State Estimation - [James Goppert](http://github.com/jgoppert), [Paul Riseborough](http://github.com/priseborough)
-  * VIO - Christoph Tobler
-  * Obstacle Avoidance - [Vilhjalmur Vilhjalmsson](http://github.com/vilhjalmur89)
-  * Snapdragon - [Mark Charlebois](http://github.com/mcharleb)
-  * Intel Aero - [Lucas de Marchi](http://github.com/lucasdemarchi), [Simone Guscetti](http://github.com/simonegu)
-  * Raspberry Pi / Navio - [Beat Kueng](http://github.com/bkueng)
-  * Parrot Bebop - [Michael Schaeuble](http://github.com/eyeam3)
-
-## Supported Hardware
-
-This repository contains code supporting these boards:
-  * [Snapdragon Flight](http://dev.px4.io/hardware-snapdragon.html)
-  * Intel Aero
-  * Raspberry PI with Navio 2
-  * [Parrot Bebop](http://dev.px4.io/starting-building.html#parrot-bebop)
-  * FMUv1.x
-  * FMUv2.x ([Pixhawk](http://dev.px4.io/hardware-pixhawk.html) and [Pixfalcon](http://dev.px4.io/hardware-pixfalcon.html))
-  * FMUv3.x ([Pixhawk 2](http://dev.px4.io/hardware-pixhawk.html))
-  * FMUv4.x (Pixhawk 3 Pro and [Pixracer](http://dev.px4.io/hardware-pixracer.html))
-  * FMUv5.x (ARM Cortex M7, future Pixhawk)
-  * AeroCore (v1 and v2)
-  * STM32F4Discovery (basic support) [Tutorial](https://pixhawk.org/modules/stm32f4discovery)
-  * MindPX V2.8 [Tutorial] (http://www.mindpx.net/assets/accessories/UserGuide_MindPX.pdf)
-  * MindRacer V1.2 [Tutorial] (http://mindpx.net/assets/accessories/mindracer_user_guide_v1.2.pdf)
-
-## Project Milestones
-
-The PX4 software and Pixhawk hardware (which has been designed for it) has been created in 2011 by Lorenz Meier.
-
-# Compile
-
-Source your ROS 2.0 workspace
-
+## How to reproduce
+### Source your ROS 2.0 workspace
 ```
 source ~/ros2_ws/install/setup.bash
 ```
 
-simulate Erle-Copter
-
+### Simulate Erle-Copter
 ```
 make posix_sitl_default gazebo_erlecopter
-commander takeoff # take off the drone
-commander land    # land the drone
+
+# now, within the PX4 prompt:
+px4> commander takeoff # take off the drone
+px4> commander land    # land the drone
 ```
 
-Now we are able to listen in the sensor topic just typing:
+Now we are able to listen in the sensor topic by just typing (in the prompt of px4):
 
 ```
-ros2_listener sensor_baro
+px4> ros2_listener sensor_baro
 ```
